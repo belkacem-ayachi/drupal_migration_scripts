@@ -3,7 +3,7 @@ import pymysql
 import os
 import subprocess
 import time
-
+import sys
 def export_remote_mysql_database(remote_host, remote_user, remote_password, remote_database, output_dir):
     """
     Exports a full MySQL database from a remote server using mysqldump.
@@ -128,6 +128,9 @@ def connect_to_mariadb_azure(host, user, password, database):
 # Example usage
 if __name__ == "__main__":
     # Replace these with your remote MySQL credentials
+    project_name = sys.argv[1] 
+    project_name = project_name if project_name else ''
+
     remote_mysql_database = input("Please enter the name of the remote MySQL database: ")
 
     remote_mysql_host = "10.30.42.24"
@@ -135,7 +138,7 @@ if __name__ == "__main__":
     remote_mysql_password = ""
     remote_mysql_database = remote_mysql_database if remote_mysql_database!="" or remote_mysql_database!= None else 'files'
 
-    export_directory = "./db_exports/"
+    export_directory = f".{project_name}/db_exports/"
 
     # Replace these with your Azure MariaDB credentials
     azure_host = "drupal-d-mariadb-001.mariadb.database.azure.com"

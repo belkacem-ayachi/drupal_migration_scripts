@@ -1,3 +1,4 @@
+import sys
 
 
 def read_file_by_lines(file_path):
@@ -24,14 +25,17 @@ def save_file_with_lines( new_file_path, lines):
 
 
 if __name__ == "__main__":
+    project_name = sys.argv[1] 
+    project_name = project_name if project_name else ''
+
     file_path = "model_settings.php"  # Replace this with the path of the file you want to read
     lines = read_file_by_lines(file_path)
 
     azure_host = "drupal-d-mariadb-001.mariadb.database.azure.com"
     azure_user = "drupaladmin@drupal-d-mariadb-001.mariadb.database.azure.com"
     azure_password = "UNescwa2020@@"
-    azure_database = "escwabeta"
-    application_DNS = "beta-dev.unescwa"
+    azure_database = "{project_name}"
+    application_DNS = "{project_name}-dev.unescwa"
 
     updated_config = f"$databases['default']['default'] = array (\
     'database' => '{azure_database}',\
@@ -52,6 +56,6 @@ if __name__ == "__main__":
 
     lines[800] = updated_config
     del lines[801:815]
-    save_file_with_lines( new_file_path='./settings_updates.php', lines= lines)
+    save_file_with_lines( new_file_path=f'./{project_name}/settings_updates.php', lines= lines)
 
 

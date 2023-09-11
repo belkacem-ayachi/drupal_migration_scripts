@@ -798,7 +798,7 @@ $settings['config_exlude_modules'] = ['update','stage_file_proxy'];
 # if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
 #   include $app_root . '/' . $site_path . '/settings.local.php';
 # }
-$databases['default']['default'] = array ('database' => 'escwabeta','username' => 'drupaladmin@drupal-d-mariadb-001.mariadb.database.azure.com','password' => 'UNescwa2020@@','prefix' => '','host' => 'drupal-d-mariadb-001.mariadb.database.azure.com','port' => '3306','namespace' => 'Drupal\Core\Database\Driver\mysql','driver' => 'mysql','options' => array( PDO::MYSQL_ATTR_SSL_CA => './DigiCertGlobalRootG2.crt.pem'));$settings['trusted_host_patterns'] = array(    '^beta-dev.unescwa\.org$',    '^.+\beta-dev.unescwa\.org$',    );
+$databases['default']['default'] = array (    'database' => 'andpportal',    'username' => 'drupaladmin@drupal-d-mariadb-001.mariadb.database.azure.com',    'password' => 'UNescwa2020@@',    'prefix' => '',    'host' => 'drupal-d-mariadb-001.mariadb.database.azure.com',    'port' => '3306',    'namespace' => 'Drupal\Core\Database\Driver\mysql',    'driver' => 'mysql',    'options' => array( PDO::MYSQL_ATTR_SSL_CA => './DigiCertGlobalRootG2.crt.pem')    );    $settings['trusted_host_patterns'] = array(        '^andp-dev.unescwa\.org$',        '^.+\andp-dev.unescwa\.org$',        );    
 /**$databases['migrate']['default'] = array (
  * 'database' => 'escwa_d7',
  * 'username' => 'root',
