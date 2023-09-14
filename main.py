@@ -27,7 +27,7 @@ def create_docker_file(project_name,file_path='./Dockerfile'):
         lines[1] = f"COPY ./ /var/www/html/{project_name}/  \n"
         lines[2] = f"COPY ./apache-config/ /etc/apache2/sites-available/  \n"
         lines[3] = f"RUN ln -s /etc/apache2/sites-available/{project_name}.conf /etc/apache2/sites-enabled/  \n"
-
+        lines[4] = ""
         # Open the file in write mode and write the modified content
         with open(f"./{project_name}/Dockerfile", 'w') as file:
             file.writelines(lines)
@@ -50,7 +50,6 @@ if __name__ == "__main__":
     #Create the settings.php
     create_settings_php = "./update-php-settings.py"
     run_python_script_interactively(create_settings_php, project_name= PROJECT_NAME)
-    
     
 
     # migrate database
