@@ -1,0 +1,142 @@
+---
+- hosts: "drupal"
+  remote_user: root
+  become: yes
+  become_method: sudo
+  become_user: root
+  gather_facts: yes
+  connection: ssh
+
+  tasks:
+     - name: Create containerd config file
+       file:
+         path: "/home/christine/conf.yaml"
+         state: "touch"
+
+    #  - name: Add conf for containerd
+    #    blockinfile:
+    #      path: "/etc/modules-load.d/containerd.conf"
+    #      block: |
+    #            overlay
+    #            br_netfilter
+
+    #  - name: modprobe
+    #    shell: |
+    #            sudo modprobe overlay
+    #            sudo modprobe br_netfilter
+
+
+    #  - name: Set system configurations for Kubernetes networking
+    #    file:
+    #      path: "/etc/sysctl.d/99-kubernetes-cri.conf"
+    #      state: "touch"
+
+    #  - name: Add conf for containerd
+    #    blockinfile:
+    #      path: "/etc/sysctl.d/99-kubernetes-cri.conf"
+    #      block: |
+    #             net.bridge.bridge-nf-call-iptables = 1
+    #             net.ipv4.ip_forward = 1
+    #             net.bridge.bridge-nf-call-ip6tables = 1
+
+    #  - name: Apply new settings
+    #    command: sudo sysctl --system
+
+    #  - name: install containerd
+    #    shell: |
+    #            sudo apt-get update && sudo apt-get install -y containerd
+    #            sudo mkdir -p /etc/containerd
+    #            sudo containerd config default | sudo tee /etc/containerd/config.toml
+    #            sudo systemctl restart containerd
+     
+    #  - name: Install packages that allow apt to be used over HTTPS
+    #    apt:
+    #       name: "{{ packages }}"
+    #       state: present
+    #       update_cache: yes
+    #    vars:
+    #       packages:
+    #       - apt-transport-https
+    #       - ca-certificates
+    #       - curl
+    #       - gnupg
+    #       - software-properties-common
+    #       - lsb-release
+  
+    #         # curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+
+    #  - name: Add an apt signing key for Docker
+    #    apt_key:
+    #       url: https://download.docker.com/linux/ubuntu/gpg
+    #       state: present
+  
+    #  - name: Add apt repository for stable version
+    #    apt_repository:
+    #       repo: deb  https://download.docker.com/linux/ubuntu focal stable
+    #       state: present
+
+    #  - name: clean docker old versions
+    #    apt:
+    #       name: "{{ packages }}"
+    #       state: absent
+    #       update_cache: yes
+    #    vars:
+    #       packages:
+    #       - docker
+    #       - docker-engine
+    #       - docker.io
+    #       - runc
+
+    #  - name: Install docker and its dependecies # check version of Docker
+    #    apt:
+    #       name: "{{ packages }}"
+    #       state: present
+    #       update_cache: yes
+    #    vars:
+    #       packages:
+    #       - docker-ce
+    #       - docker-ce-cli
+    #    notify:
+    #      - docker status # deprecated
+
+    #  - name: Add remote kube to docker root
+    #    user:
+    #      name: kube
+    #      group: docker
+    #      append: yes
+
+
+    #  - name: Remove swapfile from /etc/fstab
+    #    mount:
+    #       name: "{{ item }}"
+    #       fstype: swap
+    #       state: absent
+    #    with_items:
+    #       - swap
+    #       - none 
+    #  - name: disable swap
+    #    shell: |
+    #            sudo swapoff -a
+    #            sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+
+    #  - name: install and configure dependencies
+    #    shell: |
+    #            sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+    #            curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+    #  - name: Create kubernetes repo file
+    #    file:
+    #      path: "/etc/apt/sources.list.d/kubernetes.list"
+    #      state: "touch"
+
+    #  - name: Add K8s Source
+    #    blockinfile:
+    #      path: "/etc/apt/sources.list.d/kubernetes.list"
+    #      block: |
+    #            deb https://apt.kubernetes.io/ kubernetes-xenial main
+
+    #  - name: install kubernetes
+    #    shell: |
+    #            sudo apt-get update
+    #            sudo apt-get install -y kubelet=1.20.1-00 kubeadm=1.20.1-00 kubectl=1.20.1-00
+    #            sudo apt-mark hold kubelet kubeadm kubectl

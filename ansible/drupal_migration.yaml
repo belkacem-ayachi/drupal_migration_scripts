@@ -1,0 +1,56 @@
+---
+- name: Deploy Drupal Application
+  hosts: all
+  become: yes
+  vars_prompt:
+  - name: application_name
+    prompt: "Enter the name of the application: "
+    private: no
+
+
+  tasks:
+    - name: Create apache-config folder
+      file:
+      path: /var/www/html/{{ application_name }}/apache-config
+      state: directory
+
+    - name: Copy Apache config file
+      copy:
+        src: /etc/apache2/sites-available/{{ application_name }}.conf
+        dest: /var/www/html/apache-config/{{ application_name }}.conf
+
+    - name: Copy Dockerfile
+      copy:
+        src: /home/christines/drupal_migration/drupal_migration_scripts/Dockerfile
+        dest: /var/www/html/{{ application_name }}/Dockerfile
+
+    - name: Copy docker-compose file
+      copy:
+        src: /home/christines/drupal_migration/drupal_migration_scripts/docker-compose.yml
+        dest: /var/www/html/{{ application_name }}/docker-compose.yml
+
+    - name: Update settings
+      command: python3 /home/christines/drupal_migration/drupal_migration_scripts/update_php_settings.py
+      args:
+      chdir: /var/www/html/{{ application_name }}/public_html/sites/default
+
+
+
+    - name: Copy DigiCertGlobalRootG2.crt.pem
+      copy:
+        src: /home/christines/drupal_migration/drupal_migration_scripts/DigiCertGlobalRootG2.crt.pem
+        dest: /var/www/html/{{ application_name }}/public_html/sites/default/DigiCertGlobalRootG2.crt.pem
+
+    - name: Build Docker image
+      command: docker build -t drupaldevacr001.azurecr.io/drupal/{{ application_name }} .
+      args:
+      chdir: /var/www/html/{{ application_name }}
+
+
+    - name: Log in to Azure Container Registry
+      command: az login --service-principal -u <APP_ID> -p <PASSWORD> --tenant <TENANT_ID>
+
+
+
+    - name: Push Docker image to Azure Container Registry
+      command: docker push drupaldevacr001.azurecr.io/drupal/{{ application_name }} 

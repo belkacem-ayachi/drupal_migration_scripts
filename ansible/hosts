@@ -1,0 +1,2 @@
+[drupal]
+lamp-dev ansible_host=10.30.42.24 ansible_user=root
