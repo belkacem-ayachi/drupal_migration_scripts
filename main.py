@@ -42,7 +42,7 @@ def create_docker_file(project_name,file_path='./Dockerfile'):
 # Example usage:
 if __name__ == "__main__":
     # getting the project name
-    PROJECT_NAME = input("Enter the name of the project you want to migrate (as name in folder /var/www/html/X)")
+    PROJECT_NAME = input("Enter the name of the project you want to migrate (as name in folder /var/www/html/X) :")
     os.makedirs(f'./{PROJECT_NAME}', exist_ok=True)
     # Create the dockerfile
     create_docker_file(project_name= PROJECT_NAME)
