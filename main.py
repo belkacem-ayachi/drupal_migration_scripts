@@ -1,10 +1,11 @@
 import subprocess , os
+import sys
 
 def run_python_script_interactively(script_path, project_name):
     try:
         
         # Run the specified script interactively
-        subprocess.run(['python', script_path, project_name], check=True)
+        subprocess.run(['python3', script_path, project_name], check=True)
     except subprocess.CalledProcessError as e:
         print(f"Error running the script: {e}")
     except FileNotFoundError:
@@ -42,8 +43,9 @@ def create_docker_file(project_name,file_path='./Dockerfile'):
 # Example usage:
 if __name__ == "__main__":
     # getting the project name
-    PROJECT_NAME = input("Enter the name of the project you want to migrate (as name in folder /var/www/html/X) :")
+    PROJECT_NAME = sys.argv[1]
     os.makedirs(f'./{PROJECT_NAME}', exist_ok=True)
+    print("hi from main.py")
     # Create the dockerfile
     create_docker_file(project_name= PROJECT_NAME)
     

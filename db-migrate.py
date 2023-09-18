@@ -29,7 +29,7 @@ def export_remote_mysql_database(remote_host, remote_user, remote_password, remo
     print(f"Starting database export to: {export_path}")
 
     # Construct the mysqldump command for remote export
-    command = f"mysqldump --host={remote_host} --user={remote_user} --password={remote_password} --default-character-set=utf8mb4 -N --routines --skip-triggers  {remote_database} > {export_path}"
+    command = f"mysqldump --host={remote_host} --user={remote_user} --password={remote_password} --default-character-set=utf8mb4 -N --routines --column-statistics=0 --skip-triggers  {remote_database} > {export_path}"
 
     try:
         # Execute the mysqldump command for remote export
@@ -55,7 +55,7 @@ def import_to_azure_mariadb(azure_host, azure_user, azure_password, azure_databa
         bool: True if the import was successful, False otherwise.
     """
     # Construct the mysql command for importing the backup into Azure MariaDB
-    command = f"mysql --host={azure_host} --user={azure_user} --password={azure_password} --ssl-mode=VERIFY_CA --ssl-ca=.\DigiCertGlobalRootG2.crt.pem {azure_database} < {import_file}"
+    command = f"mysql --host={azure_host} --user={azure_user} --password={azure_password} --ssl-mode=VERIFY_CA --ssl-ca=./DigiCertGlobalRootG2.crt.pem {azure_database} < {import_file}"
     # command = f"'mysql --host={azure_host} --user={azure_user} --password={azure_password} --default-character-set=utf8mb4 -N --routines --skip-triggers {azure_database}  < {import_file}"
     try:
         # Check if the database exists on the cloud DB
@@ -131,14 +131,15 @@ if __name__ == "__main__":
     project_name = sys.argv[1] 
     project_name = project_name if project_name else ''
 
-    remote_mysql_database = input("Please enter the name of the remote MySQL database: ")
+    remote_mysql_database = sys.argv[2] 
+    remote_mysql_database = remote_mysql_database if remote_mysql_database else ''
 
     remote_mysql_host = "10.30.42.24"
     remote_mysql_user = "root"
     remote_mysql_password = ""
     remote_mysql_database = remote_mysql_database if remote_mysql_database!="" or remote_mysql_database!= None else 'files'
 
-    export_directory = f".{project_name}/db_exports/"
+    export_directory = f"./db_exports/"
 
     # Replace these with your Azure MariaDB credentials
     azure_host = "drupal-d-mariadb-001.mariadb.database.azure.com"
