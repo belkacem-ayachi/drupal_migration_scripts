@@ -32,7 +32,7 @@ def create_docker_file(project_name,file_path='./Dockerfile'):
 
 # Example usage:
 if __name__ == "__main__":
-    # getting the project name
+    # getting the project name from cmd
     PROJECT_NAME = sys.argv[1]
     os.makedirs(f'./{PROJECT_NAME}', exist_ok=True)
     # Create the dockerfile
