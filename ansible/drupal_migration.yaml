@@ -1,7 +1,6 @@
 ---
-# make sure that mysql workbench is install
+# make sure that mysql workbench and client are installed on the server
 # sudo apt install mysql-client-core-8.0
-
 - name: Deploy Drupal Application
   hosts: servers
   become: yes
@@ -14,7 +13,8 @@
     prompt: "Enter the name of the database: "
     private: no
   vars:
-    commun_path : "home/christines/drupal_migration/{{ application_name }}"   
+    clone_path : "home/christines/drupal_migration/{{ application_name }}"   
+    scripts_path : "home/christines/drupal_migration/drupal_migration_scripts"
 
   tasks:
     - name: Duplicate application folder to ~/drupal_migration
@@ -25,57 +25,63 @@
 
     - name: Create apache-config folder
       file:
-        path: /{{commun_path}}/apache-config
+        path: /{{clone_path}}/apache-config
         state: directory
 
     - name: Copy Apache config file
       copy:
         src: /etc/apache2/sites-available/{{ application_name }}.conf
-        dest: /{{commun_path}}/apache-config/{{ application_name }}.conf
+        dest: /{{clone_path}}/apache-config/{{ application_name }}.conf
         remote_src: yes
 
-    - name: Installing mysql module for python
-      pip:
-        name:
-          - mysql-connector-python
-          - pymysql
+    # - name: Installing mysql module for python
+    #   pip:
+    #     name:
+    #       - mysql-connector-python
+    #       - pymysql
 
-    # - name: Dockerfile creation,
-
-    #   command: python3 /home/christines/drupal_migration/drupal_migration_scripts/main.py {{ application_name }}
-
-    #   args:
-
-    #     chdir: /home/christines/drupal_migration/drupal_migration_scripts
-
-    #   register: script_output
+    - name: Dockerfile creation
+      command: python3 /{{ scripts_path }}/dockerfile_creation.py {{ application_name }}
+      args:
+        chdir: /{{ scripts_path }}
+      register: script_output
 
     - name: Updated php settings  
-      command: python3 /home/christines/drupal_migration/drupal_migration_scripts/update-php-settings.py {{ application_name }}
+      command: python3 /{{ scripts_path }}/update-php-settings.py {{ application_name }}
       args:
-        chdir: /home/christines/drupal_migration/drupal_migration_scripts
+        chdir: /{{ scripts_path }}
       register: script_output
 
-    - name: Database migration
-      command: python3 /home/christines/drupal_migration/drupal_migration_scripts/db-migrate.py {{ application_name }} {{ database_name }}
+    - name: Move Dockerfile and updated php settings 
+      command: mv "{{ item }}" {{ clone_path }}
+      with_fileglob:
+        - /{{ scripts_path }}/{{ application_name }}/*
       args:
-        chdir: /home/christines/drupal_migration/drupal_migration_scripts
-      register: script_output
+        chdir: /{{ scripts_path }}/{{ application_name }}
+
+    # - name: Database migration
+    #   command: python3 /{{ scripts_path }}/db-migrate.py {{ application_name }} {{ database_name }}
+    #   args:
+    #     chdir: /{{ scripts_path }}
+    #   register: script_output
 
     - name: Display script output
       debug:
         var: script_output.stdout_lines
-# - name: Copy DigiCertGlobalRootG2.crt.pem
-#   copy:
-#     src: /home/christines/drupal_migration/drupal_migration_scripts/DigiCertGlobalRootG2.crt.pem
-#     dest: /{{commun_path}}/public_html/sites/default
-#     remote_src: yes
 
-# - name: Build Docker image
-#   command: docker build -t drupaldevacr001.azurecr.io/drupal/{{ application_name }}:latest .
 
-# - name: Log in to Azure Imager Registry
-#   command: az login drupaldevacr001.azurecr.io -u <username> -p <PASSWORD>
+    # - name: Copy DigiCertGlobalRootG2.crt.pem
+    #   copy:
+    #     src: /{{ scripts_path }}/DigiCertGlobalRootG2.crt.pem
+    #     dest: /{{clone_path}}/public_html/sites/default
+    #     remote_src: yes
 
-# - name: Push Docker image to Azure Container Registry
-#   command: docker push drupaldevacr001.azurecr.io/drupal/{{ application_name }}
+      
+    # - name: Build Docker image
+    #   command: docker build -t drupaldevacr001.azurecr.io/drupal/{{ application_name }}:latest .
+
+    # - name: Log in to Azure Imager Registry
+    #   command: az login drupaldevacr001.azurecr.io -u <username> -p <PASSWORD>
+
+    # - name: Push Docker image to Azure Container Registry
+    #   command: docker push drupaldevacr001.azurecr.io/drupal/{{ application_name }}
