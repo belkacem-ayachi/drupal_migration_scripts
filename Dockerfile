@@ -35,10 +35,10 @@ RUN docker-php-ext-install imap
 # PHP Module: opcache
 RUN docker-php-ext-enable opcache
 
-# PHP Module: redis
-RUN apt install -y redis-tools
-RUN pecl install redis-5.3.7
-RUN docker-php-ext-enable redis
+# # PHP Module: redis
+# RUN apt install -y redis-tools
+# RUN pecl install redis-5.3.7
+# RUN docker-php-ext-enable redis
 
 # Enable apache modules
 RUN a2enmod rewrite headers
