@@ -34,8 +34,8 @@ if __name__ == "__main__":
     azure_host = "drupal-d-mariadb-001.mariadb.database.azure.com"
     azure_user = "drupaladmin@drupal-d-mariadb-001.mariadb.database.azure.com"
     azure_password = "UNescwa2020@@"
-    azure_database = "{project_name}"
-    application_DNS = "{project_name}-dev.unescwa"
+    azure_database = f"{project_name}"
+    application_DNS = f"{project_name}-dev.unescwa"
 
     updated_config = f"$databases['default']['default'] = array (\
     'database' => '{azure_database}',\
