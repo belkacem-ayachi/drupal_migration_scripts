@@ -29,7 +29,7 @@ def export_remote_mysql_database(remote_host, remote_user, remote_password, remo
     print(f"Starting database export to: {export_path}")
 
     # Construct the mysqldump command for remote export
-    command = f"mysqldump --host={remote_host} --user={remote_user} --password={remote_password} --default-character-set=utf8mb4 -N --routines --skip-triggers  {remote_database} > {export_path}"
+    command = f"mysqldump --host={remote_host} --user={remote_user} --password={remote_password} --default-character-set=utf8mb4 -N --routines --column-statistics=0 --skip-triggers  {remote_database} > {export_path}"
 
     try:
         # Execute the mysqldump command for remote export
@@ -55,7 +55,7 @@ def import_to_azure_mariadb(azure_host, azure_user, azure_password, azure_databa
         bool: True if the import was successful, False otherwise.
     """
     # Construct the mysql command for importing the backup into Azure MariaDB
-    command = f"mysql --host={azure_host} --user={azure_user} --password={azure_password} --ssl-mode=VERIFY_CA --ssl-ca=.\DigiCertGlobalRootG2.crt.pem {azure_database} < {import_file}"
+    command = f"mysql --host={azure_host} --user={azure_user} --password={azure_password} --ssl-mode=VERIFY_CA --ssl-ca=./DigiCertGlobalRootG2.crt.pem {azure_database} < {import_file}"
     # command = f"'mysql --host={azure_host} --user={azure_user} --password={azure_password} --default-character-set=utf8mb4 -N --routines --skip-triggers {azure_database}  < {import_file}"
     try:
         # Check if the database exists on the cloud DB
