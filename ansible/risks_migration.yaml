@@ -34,11 +34,11 @@
         dest: /{{clone_path}}/apache-config/risks.conf
         remote_src: yes
 
-    # - name: Installing mysql module for python
-    #   pip:
-    #     name:
-    #       - mysql-connector-python
-    #       - pymysql
+    - name: Installing mysql module for python
+      pip:
+        name:
+          - mysql-connector-python
+          - pymysql
 
     - name: Dockerfile creation
       command: python3 /{{ scripts_path }}/dockerfile_creation.py risks
@@ -52,33 +52,42 @@
         chdir: /{{ scripts_path }}
       register: script_output
 
-    - name: Move Dockerfile and updated php settings 
-      command: mv "{{ item }}" {{ clone_path }}
-      with_fileglob:
-        - /{{ scripts_path }}/risks/*
-      args:
-        chdir: /{{ scripts_path }}/risks
+
+    - name: Copy Dockerfile to the correct directory 
+      copy:
+        src: /{{ scripts_path }}/risks/Dockerfile 
+        dest: /{{ clone_path }}
+        remote_src: yes
+
+    - name: Copy php settings to the correct directory 
+      copy:
+        src: /{{ scripts_path }}/risks/settings_updates.php
+        dest: /{{ clone_path }}
+        remote_src: yes
 
     # - name: Database migration
-    #   command: python3 /{{ scripts_path }}/db-migrate.py risks {{ database_name }}
+    #   command: python3 /{{ scripts_path }}/db-migrate.py risks risks
     #   args:
     #     chdir: /{{ scripts_path }}
     #   register: script_output
 
-    - name: Display script output
+    # - name: Display script output
+    #   debug:
+    #     var: script_output.stdout_lines
+
+      
+    - name: Build Docker image
+      command: docker build -t drupaldevacr001.azurecr.io/drupal/risks:latest .
+      args:
+        chdir: /{{ clone_path }}
+      register: script_output
+
+    - name: Display image build output
       debug:
         var: script_output.stdout_lines
 
-
-    # - name: Copy DigiCertGlobalRootG2.crt.pem
-    #   copy:
-    #     src: /{{ scripts_path }}/DigiCertGlobalRootG2.crt.pem
-    #     dest: /{{clone_path}}/public_html/sites/default
-    #     remote_src: yes
-
-      
-    # - name: Build Docker image
-    #   command: docker build -t drupaldevacr001.azurecr.io/drupal/risks:latest .
+    - name: running docker image
+      command: docker run -p 5001:80 -d drupaldevacr001.azurecr.io/drupal/risks:latest 
 
     # - name: Log in to Azure Imager Registry
     #   command: az login drupaldevacr001.azurecr.io -u <username> -p <PASSWORD>
