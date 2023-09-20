@@ -1,16 +1,22 @@
 FROM php:8.1-apache-bullseye
 # Copy the Code folder to the container
-COPY ./ /var/www/html/<PROJECT-NAME>/
+COPY ./ /var/www/html/andp/
 COPY ./apache-config/ /etc/apache2/sites-available/
-RUN ln -s /etc/apache2/sites-available/<PROJECT-NAME>.conf /etc/apache2/sites-enabled/
+RUN ln -s /etc/apache2/sites-available/andp.conf /etc/apache2/sites-enabled/
 EXPOSE 80
 EXPOSE 443
+
 
 
 # Debian Buster configuration
 RUN apt update -y --fix-missing
 RUN apt upgrade -y
 RUN apt install -y apt-utils nano wget dialog software-properties-common build-essential git curl openssl
+
+# PHP Module: mariadb
+RUN apt install -y mariadb-client
+RUN docker-php-ext-install pdo_mysql
+RUN docker-php-ext-install mysqli
 
 # PHP Module: zip
 RUN apt install -y libzip-dev unzip
@@ -35,10 +41,10 @@ RUN docker-php-ext-install imap
 # PHP Module: opcache
 RUN docker-php-ext-enable opcache
 
-# # PHP Module: redis
-# RUN apt install -y redis-tools
-# RUN pecl install redis-5.3.7
-# RUN docker-php-ext-enable redis
+# PHP Module: redis
+RUN apt install -y redis-tools
+RUN pecl install redis-5.3.7
+RUN docker-php-ext-enable redis
 
 # Enable apache modules
 RUN a2enmod rewrite headers
