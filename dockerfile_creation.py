@@ -12,7 +12,6 @@ def create_docker_file(project_name,file_path='./Dockerfile'):
             print("File does not have 5 lines to replace.")
             return
         
-        
        
         lines[0] = "FROM php:8.1-apache-bullseye \n"
         lines[1] = f"COPY ./ /var/www/html/{project_name}/  \n"

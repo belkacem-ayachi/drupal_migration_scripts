@@ -1,0 +1,87 @@
+---
+# make sure that mysql workbench and client are installed on the server
+# sudo apt install mysql-client-core-8.0
+- name: Deploy Drupal Application
+  hosts: servers
+  become: yes
+  become_user: root
+  # vars_prompt:
+  # - name: application_name
+  #   prompt: "Enter the name of the application: "
+  #   private: no
+  # - name: database_name
+  #   prompt: "Enter the name of the database: "
+  #   private: no
+  vars:
+    clone_path : "home/christines/drupal_migration/risks"   
+    scripts_path : "home/christines/drupal_migration/drupal_migration_scripts"
+
+  tasks:
+    - name: Duplicate application folder to ~/drupal_migration
+      copy:
+        src: /var/www/html/risks
+        dest: /home/christines/drupal_migration
+        remote_src: yes
+
+    - name: Create apache-config folder
+      file:
+        path: /{{clone_path}}/apache-config
+        state: directory
+
+    - name: Copy Apache config file
+      copy:
+        src: /etc/apache2/sites-available/risks.conf
+        dest: /{{clone_path}}/apache-config/risks.conf
+        remote_src: yes
+
+    # - name: Installing mysql module for python
+    #   pip:
+    #     name:
+    #       - mysql-connector-python
+    #       - pymysql
+
+    - name: Dockerfile creation
+      command: python3 /{{ scripts_path }}/dockerfile_creation.py risks
+      args:
+        chdir: /{{ scripts_path }}
+      register: script_output
+
+    - name: Updated php settings  
+      command: python3 /{{ scripts_path }}/update-php-settings.py risks
+      args:
+        chdir: /{{ scripts_path }}
+      register: script_output
+
+    - name: Move Dockerfile and updated php settings 
+      command: mv "{{ item }}" {{ clone_path }}
+      with_fileglob:
+        - /{{ scripts_path }}/risks/*
+      args:
+        chdir: /{{ scripts_path }}/risks
+
+    # - name: Database migration
+    #   command: python3 /{{ scripts_path }}/db-migrate.py risks {{ database_name }}
+    #   args:
+    #     chdir: /{{ scripts_path }}
+    #   register: script_output
+
+    - name: Display script output
+      debug:
+        var: script_output.stdout_lines
+
+
+    # - name: Copy DigiCertGlobalRootG2.crt.pem
+    #   copy:
+    #     src: /{{ scripts_path }}/DigiCertGlobalRootG2.crt.pem
+    #     dest: /{{clone_path}}/public_html/sites/default
+    #     remote_src: yes
+
+      
+    # - name: Build Docker image
+    #   command: docker build -t drupaldevacr001.azurecr.io/drupal/risks:latest .
+
+    # - name: Log in to Azure Imager Registry
+    #   command: az login drupaldevacr001.azurecr.io -u <username> -p <PASSWORD>
+
+    # - name: Push Docker image to Azure Container Registry
+    #   command: docker push drupaldevacr001.azurecr.io/drupal/risks
